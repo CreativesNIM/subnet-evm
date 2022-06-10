@@ -4,13 +4,13 @@ set -e
 # e.g.,
 #
 # run without e2e tests
-# ./scripts/run.sh 1.7.10 0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC
+# ./scripts/run.sh 1.7.13 0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC
 #
 # run without e2e tests with DEBUG log level
-# AVALANCHE_LOG_LEVEL=DEBUG ./scripts/run.sh 1.7.10 0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC
+# AVALANCHE_LOG_LEVEL=DEBUG ./scripts/run.sh 1.7.13 0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC
 #
 # run with e2e tests
-# E2E=true ./scripts/run.sh 1.7.10 0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC
+# E2E=true ./scripts/run.sh 1.7.13 0x8db97C7cEcE249c2b98bDC0226Cc4C2A57BF52FC
 if ! [[ "$0" =~ scripts/run.sh ]]; then
   echo "must be run from repository root"
   exit 255
@@ -191,7 +191,7 @@ EOF
 # download avalanche-network-runner
 # https://github.com/ava-labs/avalanche-network-runner
 # TODO: use "go install -v github.com/ava-labs/avalanche-network-runner/cmd/avalanche-network-runner@v${NETWORK_RUNNER_VERSION}"
-NETWORK_RUNNER_VERSION=1.0.12
+NETWORK_RUNNER_VERSION=1.0.16
 DOWNLOAD_PATH=/tmp/avalanche-network-runner.tar.gz
 DOWNLOAD_URL=https://github.com/ava-labs/avalanche-network-runner/releases/download/v${NETWORK_RUNNER_VERSION}/avalanche-network-runner_${NETWORK_RUNNER_VERSION}_linux_amd64.tar.gz
 if [[ ${GOOS} == "darwin" ]]; then
@@ -265,8 +265,6 @@ else
   echo ""
   echo "use the following command to terminate:"
   echo ""
-  echo "pkill -P ${PID}"
-  echo "kill -2 ${PID}"
-  echo "pkill -9 -f srEXiWaHuhNyGwPUi444Tu47ZEDwxTWrbQiuD7FmgSAQ6X7Dy"
+  echo "pkill -P ${PID} && kill -2 ${PID} && pkill -9 -f srEXiWaHuhNyGwPUi444Tu47ZEDwxTWrbQiuD7FmgSAQ6X7Dy"
   echo ""
 fi

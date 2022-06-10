@@ -12,8 +12,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/ava-labs/avalanche-network-runner/client"
+	runner_sdk "github.com/ava-labs/avalanche-network-runner-sdk"
 	"github.com/ava-labs/avalanchego/ids"
+	"github.com/ava-labs/subnet-evm/tests"
 	ginkgo "github.com/onsi/ginkgo/v2"
 	"github.com/onsi/ginkgo/v2/formatter"
 	"github.com/onsi/gomega"
@@ -120,7 +121,7 @@ const (
 )
 
 var (
-	cli             client.Client
+	cli             runner_sdk.Client
 	subnetEVMRPCEps []string
 )
 
@@ -128,7 +129,7 @@ var _ = ginkgo.BeforeSuite(func() {
 	gomega.Expect(mode).Should(gomega.Or(gomega.Equal("test"), gomega.Equal("run")))
 
 	var err error
-	cli, err = client.New(client.Config{
+	cli, err = runner_sdk.New(runner_sdk.Config{
 		LogLevel:    networkRunnerLogLevel,
 		Endpoint:    gRPCEp,
 		DialTimeout: 10 * time.Second,
@@ -141,9 +142,9 @@ var _ = ginkgo.BeforeSuite(func() {
 		resp, err := cli.Start(
 			ctx,
 			execPath,
-			client.WithLogLevel(logLevel),
-			client.WithPluginDir(pluginDir),
-			client.WithCustomVMs(map[string]string{
+			runner_sdk.WithLogLevel(logLevel),
+			runner_sdk.WithPluginDir(pluginDir),
+			runner_sdk.WithCustomVMs(map[string]string{
 				vmName: vmGenesisPath,
 			}))
 		cancel()
@@ -241,7 +242,20 @@ var _ = ginkgo.AfterSuite(func() {
 	gomega.Expect(cli.Close()).Should(gomega.BeNil())
 })
 
-var _ = ginkgo.Describe("[basic]", func() {
+var _ = ginkgo.Describe("[RPC server]", func() {
+	ginkgo.It("can curl eth_blockNumber in every endpoint", func() {
+		for _, ep := range subnetEVMRPCEps {
+			matchedLine, err := tests.CURLPost(ep, `{
+	"jsonrpc": "2.0",
+	"method": "eth_blockNumber",
+	"params": [],
+	"id": 1
+}`, `{"jsonrpc":"2.0","id":1,"result":"0x0"}`)
+			gomega.Expect(err).Should(gomega.BeNil())
+			outf("{{cyan}}%q returned{{/}}: %s\n", ep, matchedLine)
+		}
+	})
+
 	ginkgo.It("can TODO", func() {
 		if mode != modeTest {
 			ginkgo.Skip("mode is not 'test'; skipping...")
